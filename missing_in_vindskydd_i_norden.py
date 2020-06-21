@@ -61,10 +61,12 @@ from geojson import Point, Feature, FeatureCollection, dump
 print("Number of missing shelters in Vindskydd i Norden database found in https://github.com/so9q/SEPAtoWikidata/blob/master/anordningar.pretty.geojson from Naturvårdsverket:")
 features = []
 for feature in data["features"]:
-    objectid = feature["properties"]["OBJECTID"]
-    if (objectid not in matches):
-        missing_count += 1
-        features.append(feature)
+    types = feature["properties"]["Undertyp"]
+    if types in ["Bakval","Kåta","Tältplats","Koja"]:
+        objectid = feature["properties"]["OBJECTID"]
+        if (objectid not in matches):
+            missing_count += 1
+            features.append(feature)
 
 print(str(missing_count)+" missing out of "+str(feature_count)+" total")
 
@@ -72,6 +74,6 @@ print(str(missing_count)+" missing out of "+str(feature_count)+" total")
 print("exporting missing features to missing.geojson")
 feature_collection = FeatureCollection(features)
 
-with open('missing.geojson', 'w') as f:
-       dump(feature_collection, f)
+with open('missing-in-vindskydd-i-norden.geojson', 'w', encoding='utf8') as f:
+       dump(feature_collection, f, ensure_ascii=False)
 
