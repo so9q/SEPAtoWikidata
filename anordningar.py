@@ -37,11 +37,17 @@ with f:
               "P31",   #instance
               "P2561", #name
               "P17",   #country
-              "P276",  #location = name of area is known lookup in query.json 
+              "P276",  #location = name of area is known lookup in query.json
+              "S248",  #stated in
+              "s813",  #retrieved
               "P137",  #operator = lookup in query.json
               "P131",  #administrative ent. = lookup in query.json = municipality
               "P625",  #coord
+              "S248",  #stated in
+              "s813",  #retrieved
               "P912",  #has facility
+              "S248",  #stated in
+              "s813",  #retrieved
               "P5195"  #Wikidata Dataset Imports page
               ]
     #print(header)
@@ -105,6 +111,8 @@ with f:
                     count += 1
                 
                 #print(feature["properties"]["Anordning_ID"])
+                source = "Q96504366"
+                timestr = "+2020-06-21T00:00:00Z/11"
                 row = ["",
                        name,
                        name,
@@ -113,14 +121,20 @@ with f:
                        "sv:"+'"'+name+'"',
                        "Q34",
                        location,
+                       source,
+                       timestr,
                        operator,
                        admin,
                        "@"+ str(lat) + "/"+ str(lon),
+                       source,
+                       timestr,
                        "Q96391237", #floorless lean-to with fixed
                                     #bench according to
                                     #http://trundoskoterklubb.pitea.riksnet.se/?Bildgalleri
                                     #and
                                     #https://www.blocket.se/annons/vasterbotten/grillkoja/89950385
+                       source,
+                       timestr,
                        '"https://www.wikidata.org/wiki/Wikidata:WikiProject_Shelters/Sweden"']
                 #print(row)
                 writer.writerow(row)

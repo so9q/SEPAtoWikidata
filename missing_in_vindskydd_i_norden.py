@@ -38,7 +38,7 @@ for feature in data["features"]:
             lat = entry["geometry"]["coordinates"][1]
             lon = entry["geometry"]["coordinates"][0]
             entry_coord = (lat,lon)
-            distance = geopy.distance.distance(nvcoord, entry_coord).m
+            distance = geopy.distance.great_circle(nvcoord, entry_coord).m
             if (distance < 100):
                 #print(entry["properties"]["name"] + " is closer than 100m to OBJECTID:"+str(objectid) + ". Distance: "+str(distance)+"m")
                 # log matches
@@ -74,6 +74,7 @@ print(str(missing_count)+" missing out of "+str(feature_count)+" total")
 print("exporting missing features to missing.geojson")
 feature_collection = FeatureCollection(features)
 
+# https://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
 with open('missing-in-vindskydd-i-norden.geojson', 'w', encoding='utf8') as f:
        dump(feature_collection, f, ensure_ascii=False)
 
