@@ -2,7 +2,7 @@
 # example import: https://www.wikidata.org/wiki/Q96475355
 # GPLv3
 
-# pseudo code
+# pseudo code:
 # for every osm object
 # see if any vin feature matches and save the osmid if yes
 # for every non match print osm feature
@@ -59,13 +59,16 @@ import osm2geojson
 print("converting to geojson")
 osmdata = osm2geojson.json2geojson(osmjson)
 print("conversion done")
-print(osmdata["features"][0])
+#print(osmdata["features"][0])
 
 matches = set()
 print("Searching for matches within 100m")
 # loop through the list
 for osmfeature in osmdata["features"]:
         osmfeature_count += 1
+        # debug break out
+        # if (osmfeature_count == 5):
+        #     break
         osmid = osmfeature["properties"]["id"]
         lat = osmfeature["geometry"]["coordinates"][1]
         lon = osmfeature["geometry"]["coordinates"][0]
@@ -90,30 +93,28 @@ print(str(len(matches)) +" matches found")
 #https://gis.stackexchange.com/questions/130963/write-geojson-into-a-geojson-file-with-python#130987
 from geojson import Point, Feature, FeatureCollection, dump
 
-#point = Point((-115.81, 37.24))
-
-#features = []
-#features.append(Feature(geometry=point, properties={"country": "Spain"}))
-
-# add more features...
-# features.append(...)
-
 # all non-matching objectids are missing
-print("Number of missing shelters in OpenStreetMap found in https://github.com/so9q/SEPAtoWikidata/blob/master/anordningar.geojson from Naturvårdsverket:")
+#print(matches)
+print("Calculating of missing shelters in VIN found in OSM")
 features = []
 for feature in osmdata["features"]:
-    osmid = osmfeature["properties"]["id"]    
+    osmid = feature["properties"]["id"]    
     if (osmid not in matches):
+        #print(str(osmid)+ " not in matches")
         missing_count += 1
+        # remove nested tags and place them in properties instead
+        for tag in feature["properties"]["tags"]:
+            feature["properties"][tag] = feature["properties"]["tags"][tag]
+        del feature["properties"]["tags"]
         features.append(feature)
 
 print(str(missing_count)+" missing out of "+str(osmfeature_count)+" total")
 
 # export to file
-print("exporting missing features to geojson")
+print("Exporting missing features to geojson")
 feature_collection = FeatureCollection(features)
 
 # https://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
-with open('missing-shelters-in-openstreetmap.geojson', 'w', encoding='utf8') as f:
+with open('missing-shelters-in-vin-based-on-openstreetmap.geojson', 'w', encoding='utf8') as f:
        dump(feature_collection, f, ensure_ascii=False)
 
